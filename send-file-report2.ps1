@@ -1,3 +1,6 @@
+param($WebhookUrl, $FilePath)
+
+
 param(
     [Parameter(Mandatory=$true)]
     [string]$WebhookUrl,
@@ -51,3 +54,4 @@ try {
 catch {
     Write-Error "❌ Fehler beim Upload: $($_.Exception.Message)"
 }
+
