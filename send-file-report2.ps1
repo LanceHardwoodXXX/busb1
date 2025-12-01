@@ -1,11 +1,8 @@
-param($WebhookUrl, $FilePath)
-
-
 param(
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [string]$WebhookUrl,
 
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [string]$FilePath
 )
 
@@ -15,7 +12,7 @@ if (-not (Test-Path -Path $FilePath -PathType Leaf)) {
     exit 1
 }
 
-# Datei laden
+# Datei lesen
 $fileName = Split-Path -Path $FilePath -Leaf
 $fileBytes = [System.IO.File]::ReadAllBytes($FilePath)
 
@@ -27,17 +24,17 @@ $meta = @{
 }
 $metaJson = $meta | ConvertTo-Json
 
-# Multipart: Datei
+# Multipart Datei
 $fileContent = [System.Net.Http.ByteArrayContent]::new(@($fileBytes))
 $fileContent.Headers.ContentType = [System.Net.Http.Headers.MediaTypeHeaderValue]::new("application/octet-stream")
 $fileContent.Headers.ContentDisposition = New-Object System.Net.Http.Headers.ContentDispositionHeaderValue "form-data"
-$fileContent.Headers.ContentDisposition.Name = "file"     # n8n erwartet "file"
+$fileContent.Headers.ContentDisposition.Name = "file"
 $fileContent.Headers.ContentDisposition.FileName = $fileName
 
-# Multipart: JSON
+# Multipart JSON
 $jsonContent = New-Object System.Net.Http.StringContent($metaJson, [System.Text.Encoding]::UTF8, "application/json")
 $jsonContent.Headers.ContentDisposition = New-Object System.Net.Http.Headers.ContentDispositionHeaderValue "form-data"
-$jsonContent.Headers.ContentDisposition.Name = "data"     # n8n erwartet "data"
+$jsonContent.Headers.ContentDisposition.Name = "data"
 
 # Multipart Body
 $form = @{
@@ -54,4 +51,3 @@ try {
 catch {
     Write-Error "❌ Fehler beim Upload: $($_.Exception.Message)"
 }
-
